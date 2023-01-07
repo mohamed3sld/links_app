@@ -15,7 +15,7 @@ class AddUrl:
     def __init__(self, root2):
         self.root2 = root2
 
-        
+
    
         #Start
         #image
@@ -40,32 +40,55 @@ class AddUrl:
 
 
         #Button
-        self.btn_add = ttk.Button(self.root2, text='  Add To DataBase', image=self.icon_add, compound=LEFT, command=self.Funcadd).place(relx = 0.5, rely = 0.7, anchor = CENTER)
+        self.btn_add = ttk.Button(self.root2, text='  Add To DataBase', image=self.icon_add, compound=LEFT, command=self.Funcadd).place(relx = 0.5, rely = 0.7, anchor = CENTER, y=15)
         self.btn_display = ttk.Button(self.root2, text='Display Links', command=self.funcdisplay).place(relx = 0.5, rely = 0.9, anchor = CENTER)
         #End
+
+
+
+        self.menuico = PhotoImage(file='icons/menu.png')
+        self.menuimag = ttk.Label(self.root2, image=self.menuico).place(x=590, y=160)
+        self.entchoice = ttk.Label(self.root2, text='What is this link:', font='times 15 bold').place(x=40, y=160)
+        self.n = StringVar()
+        self.monthchoosen = ttk.Combobox(self.root2, width=15, textvariable=self.n, font='arial 15 bold')
+        self.monthchoosen.place(x=240, y=160)
+
+        # Adding combobox drop down list
+        self.mychoices = (' Group',' Website', ' Account',' App')
+        self.monthchoosen['values'] = self.mychoices
+
+
+
+
+
 
     def Funcadd(self):
         links2 = cur.execute('SELECT * FROM links').fetchall()
         list_urls = []
         for item in links2:
-            list_urls.append((id(item[1]),item[2].lower()))
+            list_urls.append(item[2].lower())
 
 
         if re.findall(self.regex, self.addurl.get()):
-            url = self.addurl.get()
-            name = self.addname.get()
+            if self.n.get() in self.mychoices:
+                url = self.addurl.get()
+                name = self.addname.get()
+                type1 = self.n.get()
 
-            if url.lower() in list_urls:
-                messagebox.showinfo('Warning', 'This link is in the database!', icon='warning')
+                if url.lower() in list_urls:
+                    messagebox.showinfo('Warning', 'This link is in the database!', icon='warning')
 
+                else:
+                    if name != ' ':
+                        query = "INSERT INTO 'links' (id, name, url, type) VALUES(?,?,?,?)"
+                        cur.execute(query, (id(url), name, url, type1))
+                        con.commit()
+                        messagebox.showinfo('Success', 'Successfully added to database', icon='info')
+                        self.addurl.delete(0, END)
+                        self.addname.delete(0, END)
+                        self.monthchoosen.delete('0', 'end')
             else:
-                if name != ' ':
-                    query = "INSERT INTO 'links' (id, name, url) VALUES(?,?,?)"
-                    cur.execute(query, (id(url), name, url))
-                    con.commit()
-                    messagebox.showinfo('Success', 'Successfully added to database', icon='info')
-                    self.addurl.delete(0, END)
-                    self.addname.delete(0, END)
+                messagebox.showinfo('Warning', 'This choice is Wrong', icon='warning')
  
                 
         else:
@@ -82,7 +105,7 @@ class AddUrl:
 def main():
     root = Tk()
     window = AddUrl(root)
-    root.geometry('700x300')
+    root.geometry('700x360')
     root.resizable(False, False)
     root.title('Add Url')
     root.config(bg='#434242')

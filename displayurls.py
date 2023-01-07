@@ -66,6 +66,15 @@ class DisplayU(Toplevel):
         btn_reset = ttk.Button(self.top, text='  Reset  ', image=self.icon_reset, command=self.funcreset, width=12, compound=LEFT)
         btn_reset.place(x=580, y=48)
 
+        self.n = StringVar()
+        self.monthchoosen = ttk.Combobox(self.top, width=8, textvariable=self.n, font='arial 10 bold')
+        self.monthchoosen.place(relx=0.7,x=135,y=53)
+
+        self.mychoices = (' Group',' Website', ' Account',' App')
+        self.monthchoosen['values'] = self.mychoices
+
+
+
         #keys keyboard
         self.search.bind('<Return>', self.funcsearch)
         self.bind('<Delete>', self.funcdelete)
@@ -79,7 +88,7 @@ class DisplayU(Toplevel):
         links = cur.execute('SELECT * FROM links').fetchall()
         count = 0
         for link in links:
-            self.listBox.insert(count, str(link[0])+'  --------  '+link[1]+'  -------- >  '+link[2])
+            self.listBox.insert(count, str(link[0])+'  --------  '+link[3]+' -'+link[1]+'  -------- >  '+link[2])
             count += 1
 
         #LABEL COUNT
@@ -140,9 +149,16 @@ class DisplayU(Toplevel):
         self.listBox.delete(0, END)
         result = cur.execute("SELECT * FROM links").fetchall()
 
+
+
         for i in result:
-            if (search_text.lower() in i[1].lower()) or (search_text in str(i[0])):
-                self.listBox.insert(0, str(i[0])+'  --------  '+i[1]+'  -------- >  '+i[2])
+            if search_text:
+                if (search_text.lower() in i[1].lower()) or (search_text in str(i[0])):
+                    self.listBox.insert(0, str(i[0])+'  --------  '+i[1]+'  -------- >  '+i[2])
+
+            elif self.n.get() in i[3]:
+                self.listBox.insert(0, str(i[0]) + '  --------  ' + i[1] + '  -------- >  ' + i[2])
+
 
         btn_reset.config(state='normal')
            
