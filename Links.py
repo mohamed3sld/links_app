@@ -74,7 +74,7 @@ class AddUrl:
 
     def funcdisplay(self):
         windows_display = DisplayU()
-
+        self.root2.wm_state('iconic')
 
 
 

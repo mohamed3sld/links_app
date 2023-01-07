@@ -12,10 +12,9 @@ cur = con.cursor()
 class DisplayU(Toplevel):
     def __init__(self):
         Toplevel.__init__(self)
-        self.geometry('1150x635')
         self.title('Display Links')
-        self.resizable(False, False)
-        self.iconbitmap("icons/app-development.ico")
+        self.iconbitmap("icons/display.ico")
+        self.state('zoomed')
 
         self.regex2 = re.compile(r'^[a-zA-Z0-9].{1,50}')
     
@@ -36,9 +35,8 @@ class DisplayU(Toplevel):
         #Scroll For ListBox
         self.sb = ttk.Scrollbar(self.buttomFrame, orient=VERTICAL)
 
-
         #List Box
-        self.listBox = Listbox(self.buttomFrame, width=100, height=25, bg='white', font='arial 12 bold', bd=8)
+        self.listBox = Listbox(self.buttomFrame, width=130, height=30, bg='white', font='arial 12 bold', bd=8)
         self.listBox.grid(row=0, column=0, padx=10)
         self.listBox.config(yscrollcommand=self.sb.set)
         self.sb.config(command=self.listBox.yview())
@@ -49,9 +47,12 @@ class DisplayU(Toplevel):
         self.updateicon = PhotoImage(file='icons/update.png')
         self.deleteicon = PhotoImage(file='icons/delete.png')
         self.go_to_link = PhotoImage(file='icons/go_to_link.png')
-        self.btn_delete = ttk.Button(self.buttomFrame, text='  Delete Link  ', command=self.funcdelete, compound=LEFT, image=self.deleteicon, width=20).place(x=970, y=20)
-        self.btn_go = ttk.Button(self.buttomFrame, text='  Open Link  ', command=self.funcgoToLink, compound=LEFT, image=self.go_to_link, width=20).place(x=970, y=75)
-        self.btn_update = ttk.Button(self.buttomFrame, text=' Update Link ', command=self.update_1, compound=LEFT, image=self.updateicon, width=20).place(x=970, y=130)
+        self.copyicon = PhotoImage(file='icons/copyicon.png')
+        self.btn_delete = ttk.Button(self.buttomFrame, text='  Delete Link  ', command=self.funcdelete, compound=LEFT, image=self.deleteicon, width=30).place(x=1260, y=20)
+        self.btn_go = ttk.Button(self.buttomFrame, text='  Open Link  ', command=self.funcgoToLink, compound=LEFT, image=self.go_to_link, width=30).place(x=1260, y=75)
+        self.btn_update = ttk.Button(self.buttomFrame, text=' Update Link ', command=self.update_1, compound=LEFT, image=self.updateicon, width=30).place(x=1260, y=130)
+        self.btn_copyID = ttk.Button(self.buttomFrame, text='      Copy ID ', command=self.copy_func, compound=LEFT, image=self.copyicon, width=30)
+        self.btn_copyID.place(x=1260, y=185)
 
 
 
@@ -59,15 +60,17 @@ class DisplayU(Toplevel):
         global btn_reset
         self.icon_search = PhotoImage(file='icons/search.png')
         self.icon_reset = PhotoImage(file='icons/reset.png')
-        self.search = ttk.Entry(self.top, font='arial 15 bold', width=30)
-        self.search.place(relx=0.6, y=37, x=80)
-        self.btn_search = ttk.Button(self.top, text='  Search  ', image=self.icon_search , command=self.funcsearch, width=10 , compound=LEFT).place(x=675, y=40)
-        btn_reset = ttk.Button(self.top, text='  Reset  ', image=self.icon_reset , command=self.funcreset, width=10, compound=LEFT)
-        btn_reset.place(x=580, y=40)
+        self.search = ttk.Entry(self.top, font='arial 17 bold', width=30)
+        self.search.place(relx=0.5, y=48, x=40)
+        self.btn_search = ttk.Button(self.top, text='  Search  ', image=self.icon_search , command=self.funcsearch, width=12 , compound=LEFT).place(x=686, y=48)
+        btn_reset = ttk.Button(self.top, text='  Reset  ', image=self.icon_reset, command=self.funcreset, width=12, compound=LEFT)
+        btn_reset.place(x=580, y=48)
 
         #keys keyboard
         self.search.bind('<Return>', self.funcsearch)
-
+        self.bind('<Delete>', self.funcdelete)
+        self.bind("<Control-c>", self.copy_func)
+        self.bind("<Control-C>", self.copy_func)
 
 
 
@@ -81,12 +84,12 @@ class DisplayU(Toplevel):
 
         #LABEL COUNT
         self.counter = Label(self.buttomFrame, text=f'{count}\nLINKS', font='times 40 bold', fg='gray')
-        self.counter.place(x=958, y=210)
+        self.counter.place(x=1290, y=300)
         #___________
 
 
 
-    def funcdelete(self):
+    def funcdelete(self, *args):
         try:
             selected_link = self.listBox.curselection()
             link = self.listBox.get(selected_link)
@@ -107,13 +110,16 @@ class DisplayU(Toplevel):
 
 
 
-    def removespace(self, value):
-            result = ''
 
-            for i in value.split(' '):
-                if i:
-                    result += f'{i} '
-            return result[:-1]
+
+
+    def copy_func(self, *args):
+        selected_link = self.listBox.curselection()
+        link = self.listBox.get(selected_link)
+        id1 = int(link[:link.index(' ')])
+        self.clipboard_clear()
+        self.clipboard_append(id1)
+        messagebox.showinfo('Copied', "ID has been copied")
 
 
 
