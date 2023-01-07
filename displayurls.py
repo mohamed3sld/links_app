@@ -77,6 +77,7 @@ class DisplayU(Toplevel):
 
         #keys keyboard
         self.search.bind('<Return>', self.funcsearch)
+        self.monthchoosen.bind('<Return>', self.funcsearch)
         self.bind('<Delete>', self.funcdelete)
         self.bind("<Control-c>", self.copy_func)
         self.bind("<Control-C>", self.copy_func)
