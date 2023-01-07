@@ -54,7 +54,7 @@ class AddUrl:
         self.monthchoosen.place(x=240, y=160)
 
         # Adding combobox drop down list
-        self.mychoices = (' Group', ' Account',' App', 'Course', 'documentation')
+        self.mychoices = (' Group', ' Account',' App', 'Course', 'Documentation', 'webApp')
         self.monthchoosen['values'] = self.mychoices
 
 
