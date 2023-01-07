@@ -67,10 +67,10 @@ class DisplayU(Toplevel):
         btn_reset.place(x=580, y=48)
 
         self.n = StringVar()
-        self.monthchoosen = ttk.Combobox(self.top, width=8, textvariable=self.n, font='arial 10 bold')
+        self.monthchoosen = ttk.Combobox(self.top, width=14, textvariable=self.n, font='arial 10 bold')
         self.monthchoosen.place(relx=0.7,x=135,y=53)
 
-        self.mychoices = (' Group',' Website', ' Account',' App')
+        self.mychoices = (' Group', ' Account',' App', 'Course', 'documentation')
         self.monthchoosen['values'] = self.mychoices
 
 
