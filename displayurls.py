@@ -155,10 +155,10 @@ class DisplayU(Toplevel):
         for i in result:
             if search_text:
                 if (search_text.lower() in i[1].lower()) or (search_text in str(i[0])):
-                    self.listBox.insert(0, str(i[0])+'  --------  '+i[1]+'  -------- >  '+i[2])
+                    self.listBox.insert(END, str(i[0])+'  --------  '+i[3]+' -'+i[1]+'  -------- >  '+i[2])
 
             elif self.n.get() in i[3]:
-                self.listBox.insert(0, str(i[0]) + '  --------  ' + i[1] + '  -------- >  ' + i[2])
+                self.listBox.insert(END, str(i[0])+'  --------  '+i[3]+' -'+i[1]+'  -------- >  '+i[2])
 
 
         btn_reset.config(state='normal')
@@ -206,7 +206,7 @@ class Update_link(Toplevel):
         link = cur.execute('SELECT * FROM links WHERE id=?', (link_id,)).fetchall()
         url = link[0][2]
         name = link[0][1]
-
+        self.type1 = link[0][3]
 
         self.icon_add = PhotoImage(file='icons/add.png')
         self.icon_url_add = PhotoImage(file='icons/urladd.png')
@@ -231,8 +231,19 @@ class Update_link(Toplevel):
 
 
 
+        self.n = StringVar()
+        self.monthchoosen = ttk.Combobox(self, width=15, textvariable=self.n, font='arial 15 bold')
+        self.monthchoosen.place(x=240, y=160)
+        self.entmenu = Label(self, text='What is this link:', fg='#22A39F', bg='#434242', font='times 15 bold').place(x=40,
+                                                                                                                   y=160)
+        # Adding combobox drop down list
+        self.mychoices = (' Group', ' Account',' App', 'Course', 'Documentation', 'webApp')
+        self.monthchoosen['values'] = self.mychoices
+        self.monthchoosen.insert(0, self.type1)
+
+
         #Button
-        self.btn_add = Button(self, text='  Update the Link ', font='arial 15 bold', bg='#678983', fg='#181D31', command=self.funcupdate, image=self.icon_add, compound=LEFT).place(relx = 0.5, rely = 0.7, anchor = CENTER)
+        self.btn_add = Button(self, text='  Update the Link ', font='arial 15 bold', bg='#678983', fg='#181D31', command=self.funcupdate, image=self.icon_add, compound=LEFT).place(relx = 0.5, rely = 0.8, anchor=CENTER)
  
     
     def funcupdate(self):
@@ -243,8 +254,8 @@ class Update_link(Toplevel):
             message = messagebox.askyesno('Warning', 'Are You Sure?', icon='warning')
             if message == True:
                 try:
-                    query = "UPDATE links set url=?, name=? WHERE id=?"
-                    cur.execute(query, (url, name, link_id))
+                    query = "UPDATE links set url=?, name=?, type=? WHERE id=?"
+                    cur.execute(query, (url, name, self.n.get(), link_id))
                     con.commit()
                     messagebox.showinfo('Success', 'Link has been updated', icon='info')
                     self.destroy()
