@@ -9,6 +9,7 @@ con = sqlite3.connect('database_urls.db')
 cur = con.cursor()
 
 
+
 class DisplayU(Toplevel):
     def __init__(self):
         Toplevel.__init__(self)
@@ -36,7 +37,8 @@ class DisplayU(Toplevel):
         self.sb = ttk.Scrollbar(self.buttomFrame, orient=VERTICAL)
 
         #List Box
-        self.listBox = Listbox(self.buttomFrame, width=130, height=30, bg='white', font='arial 12 bold', bd=8)
+        self.listBox = Listbox(self.buttomFrame, width=130, height=30, bg='white', font='arial 12 bold', bd=13, highlightbackground='white')
+
         self.listBox.grid(row=0, column=0, padx=10)
         self.listBox.config(yscrollcommand=self.sb.set)
         self.sb.config(command=self.listBox.yview())
@@ -70,7 +72,7 @@ class DisplayU(Toplevel):
         self.monthchoosen = ttk.Combobox(self.top, width=14, textvariable=self.n, font='arial 10 bold')
         self.monthchoosen.place(relx=0.7,x=135,y=53)
 
-        self.mychoices = (' Group', ' Account',' App', 'Course', 'documentation', 'webApp')
+        self.mychoices = (' Group', ' Account',' App', 'Course', 'Documentation', 'webApp')
         self.monthchoosen['values'] = self.mychoices
 
 
@@ -83,13 +85,10 @@ class DisplayU(Toplevel):
         self.bind("<Control-C>", self.copy_func)
 
 
-
-
-
-        links = cur.execute('SELECT * FROM links').fetchall()
+        self.links = cur.execute('SELECT * FROM links').fetchall()
         count = 0
-        for link in links:
-            self.listBox.insert(count, str(link[0])+'  --------  '+link[3]+' -'+link[1]+'  -------- >  '+link[2])
+        for link in self.links:
+            self.listBox.insert(count, str(link[0])+'  --------  '+link[3]+'  •••  '+link[1])
             count += 1
 
         #LABEL COUNT
@@ -137,8 +136,11 @@ class DisplayU(Toplevel):
         try:
             selected_link = self.listBox.curselection()
             link = self.listBox.get(selected_link)
-            url = link[link.index('>')+3:]
-            webbrowser.open_new_tab(url)
+            for url in self.links:
+
+                if (link[:link.index(' ')] == str(url[0])):
+                    webbrowser.open_new_tab(url[2])
+                    break
         except:
             messagebox.showerror('Error', 'Please select the link to access it!', icon='warning')
 
@@ -155,10 +157,10 @@ class DisplayU(Toplevel):
         for i in result:
             if search_text:
                 if (search_text.lower() in i[1].lower()) or (search_text in str(i[0])):
-                    self.listBox.insert(END, str(i[0])+'  --------  '+i[3]+' -'+i[1]+'  -------- >  '+i[2])
+                    self.listBox.insert(END, str(i[0])+'  --------  '+i[3]+'  •••  '+i[1])
 
             elif self.n.get() in i[3]:
-                self.listBox.insert(END, str(i[0])+'  --------  '+i[3]+' -'+i[1]+'  -------- >  '+i[2])
+                self.listBox.insert(END, str(i[0])+'  --------  '+i[3]+'  •••  '+i[1])
 
 
         btn_reset.config(state='normal')
@@ -171,7 +173,7 @@ class DisplayU(Toplevel):
         links = cur.execute('SELECT * FROM links').fetchall()# Select all items in the DataBase to add to the ListBox again.
         count1 = 0 
         for link in links:# Loop over elements that are called from the database.
-            self.listBox.insert(count1, str(link[0]) + '  --------  ' + link[3] + ' -' + link[1] + '  -------- >  ' + link[2])
+            self.listBox.insert(count1, str(link[0]) + '  --------  ' + link[3] + '  •••  ' + link[1])
             count1 += 1
  
         self.counter.configure(text=f'{count1}\nLINKS')
