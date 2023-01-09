@@ -50,11 +50,14 @@ class DisplayU(Toplevel):
         self.deleteicon = PhotoImage(file='icons/delete.png')
         self.go_to_link = PhotoImage(file='icons/go_to_link.png')
         self.copyicon = PhotoImage(file='icons/copyicon.png')
+        self.copyurlicon = PhotoImage(file='icons/copyurl.png')
         self.btn_delete = ttk.Button(self.buttomFrame, text='  Delete Link  ', command=self.funcdelete, compound=LEFT, image=self.deleteicon, width=30).place(x=1260, y=20)
         self.btn_go = ttk.Button(self.buttomFrame, text='  Open Link  ', command=self.funcgoToLink, compound=LEFT, image=self.go_to_link, width=30).place(x=1260, y=75)
         self.btn_update = ttk.Button(self.buttomFrame, text=' Update Link ', command=self.update_1, compound=LEFT, image=self.updateicon, width=30).place(x=1260, y=130)
         self.btn_copyID = ttk.Button(self.buttomFrame, text='      Copy ID ', command=self.copy_func, compound=LEFT, image=self.copyicon, width=30)
         self.btn_copyID.place(x=1260, y=185)
+        self.btn_copyURL = ttk.Button(self.buttomFrame, text='   Copy URL ', command=self.copyurl_func, compound=LEFT, image=self.copyurlicon, width=30)
+        self.btn_copyURL.place(x=1260, y=240)
 
 
 
@@ -119,6 +122,16 @@ class DisplayU(Toplevel):
 
 
 
+    def copyurl_func(self):
+        selected_link = self.listBox.curselection()
+        link = self.listBox.get(selected_link)
+        for url in self.links:
+
+            if (link[:link.index(' ')] == str(url[0])):
+                self.clipboard_clear()
+                self.clipboard_append(url[2])
+                messagebox.showinfo('Copied', "URL has been copied")
+                break
 
 
 
@@ -167,16 +180,9 @@ class DisplayU(Toplevel):
            
 
 
-
     def funcreset(self):
-        self.listBox.delete(0, END)# Delete all items in ListBox.
-        links = cur.execute('SELECT * FROM links').fetchall()# Select all items in the DataBase to add to the ListBox again.
-        count1 = 0 
-        for link in links:# Loop over elements that are called from the database.
-            self.listBox.insert(count1, str(link[0]) + '  --------  ' + link[3] + '  •••  ' + link[1])
-            count1 += 1
- 
-        self.counter.configure(text=f'{count1}\nLINKS')
+        self.destroy()
+        self.__init__()
         btn_reset.config(state=DISABLED)
 
 
@@ -259,7 +265,7 @@ class Update_link(Toplevel):
                     query = "UPDATE links set url=?, name=?, type=? WHERE id=?"
                     cur.execute(query, (url, name, self.n.get(), link_id))
                     con.commit()
-                    messagebox.showinfo('Success', 'Link has been updated', icon='info')
+                    messagebox.showinfo('Success', 'Link has been updated, But please press the Reset button on the View Links page', icon='warning')
                     self.destroy()
                     btn_reset.config(state='normal')
 
